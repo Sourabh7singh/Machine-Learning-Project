@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accident Severity Predictor</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+        }
+
+        main {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        button:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+            color: var(--text-secondary);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none; /* hidden by default */
+        }
+
+        /* Result Popup */
+        #result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success-color);
+            display: none;
+            text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #result-container.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger-color);
+        }
+
+        #result-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+        
+        #result-container.error #result-value {
+            color: var(--danger-color);
+            font-size: 1.2rem;
+        }
+
+        /* Loaders and Shimmers for initial load */
+        .shimmer {
+            height: 50px;
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Accident Severity Predictor</h1>
+        <p>Enter traffic, environmental, and road details below.</p>
+    </header>
+
+    <main>
+        <!-- The form fields will be injected here -->
+        <form id="prediction-form">
+            <div id="dynamic-grid" class="grid">
+                <!-- Shimmer placeholders while loading -->
+                <div class="form-group shimmer"></div>
+                <div class="form-group shimmer"></div>
+                <div class="form-group shimmer"></div>
+                <div class="form-group shimmer"></div>
+            </div>
+
+            <button type="submit" id="submit-btn" disabled>
+                <span class="btn-text">Predict Severity</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+
+        <div id="result-container">
+            <div id="result-title">Predicted Severity</div>
+            <div id="result-value">Loading...</div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('dynamic-grid');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            try {
+                // Fetch dynamic features
+                const response = await fetch('/features');
+                if (!response.ok) throw new Error("Could not load features.");
+                
+                const data = await response.json();
+                grid.innerHTML = ''; // Clear shimmers
+
+                // Build inputs based on features
+                data.features.forEach(feature => {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+                    
+                    const label = document.createElement('label');
+                    // Format label (e.g. "Time_of_Day" -> "Time Of Day")
+                    label.innerText = feature.name.replace(/_/g, ' ');
+                    group.appendChild(label);
+
+                    if (feature.type === 'categorical') {
+                        const select = document.createElement('select');
+                        select.name = feature.name;
+                        
+                        // Add options
+                        feature.options.forEach(opt => {
+                            if (opt === 'nan' || opt === 'NaN') return; // Skip literal NaNs if present
+                            const optionEl = document.createElement('option');
+                            optionEl.value = opt;
+                            optionEl.innerText = opt;
+                            select.appendChild(optionEl);
+                        });
+                        group.appendChild(select);
+                    } else {
+                        const input = document.createElement('input');
+                        input.type = "number";
+                        input.name = feature.name;
+                        input.placeholder = "0";
+                        input.value = "0";
+                        group.appendChild(input);
+                    }
+
+                    grid.appendChild(group);
+                });
+
+                // Enable button once loaded
+                submitBtn.disabled = false;
+
+            } catch (err) {
+                grid.innerHTML = `<p style="color:var(--danger-color)">Error loading backend API. Ensure model artifacts are built and server is running.</p>`;
+            }
+        });
+
+        // Form Submission
+        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('.spinner');
+            const resultContainer = document.getElementById('result-container');
+            const resultValue = document.getElementById('result-value');
+            const resultTitle = document.getElementById('result-title');
+
+            // Build payload
+            const formData = new FormData(e.target);
+            const features = {};
+            for (let [key, value] of formData.entries()) {
+                features[key] = value;
+            }
+
+            // UI updating logic
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            resultContainer.style.display = 'none';
+            resultContainer.className = ''; // remove error class
+            resultTitle.innerText = "Predicted Severity";
+
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ features })
+                });
+
+                const json = await res.json();
+                resultContainer.style.display = 'block';
+
+                if (res.ok) {
+                    resultValue.innerText = json.predicted_severity.toUpperCase();
+                    if(json.predicted_severity.toLowerCase().includes("fatal")) {
+                        resultValue.style.color = "var(--danger-color)";
+                        resultContainer.style.borderColor = "var(--danger-color)";
+                    } else if (json.predicted_severity.toLowerCase().includes("serious")) {
+                        resultValue.style.color = "#f59e0b"; // Orange
+                        resultContainer.style.borderColor = "#f59e0b";
+                    } else {
+                        resultValue.style.color = "var(--success-color)";
+                        resultContainer.style.borderColor = "var(--success-color)";
+                    }
+                } else {
+                    throw new Error(json.detail || "Prediction failed.");
+                }
+            } catch(e) {
+                resultContainer.style.display = 'block';
+                resultContainer.classList.add('error');
+                resultTitle.innerText = "Error";
+                resultValue.innerText = e.message;
+            } finally {
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline-block';
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

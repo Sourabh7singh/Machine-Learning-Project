@@ -1,0 +1,33 @@
+# Virtual Environments
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Large Datasets and Files
+*.csv
+Accident_Information.csv
+
+# Machine Learning Artifacts
+artifacts/
+*.pkl
+*.model
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+env/
