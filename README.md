@@ -1,133 +1,115 @@
-# Accident Fatality Prediction
-### The whole project uses a dataset from kaggle named Acciden Information which is UK dataset of crashes that had ocurred previously.
-### It consists Mainly Data filtering and Preprocessing Steps 
-### The Random Forrest classifier and Logistic Regression model was choosen after reading about many models.
-## About the project
-<ul>
-<li>
-The main drive comes from the need to drastically lower traffic accidents and fatalities in an era where road safety is paramount.
-</li>
-<li>
-The main goal was to create a reliable machine learning model that can accurately forecast crash fatalities.
-</li>
-<li>
-This research involves developing prediction models, analyzing large amounts of traffic accident data, and assessing the models' efficiency.
-</li>
-</ul>
+# 🚗 Accident Fatality Prediction
 
-## Related Previous Works
-![Previous Works](image.png)
+![Road Safety](https://img.shields.io/badge/Road-Safety-green) 
+![Machine Learning](https://img.shields.io/badge/Machine-Learning-blue) 
+![Python](https://img.shields.io/badge/Python-3.x-yellow)
 
-## Analiyzing the Dataset
+## 📌 About the Project
+  
+In an era where road safety is paramount, there is a drastic need to lower traffic accidents and fatalities. This project leverages the **Accident Information** dataset from Kaggle, detailing previous UK crashes, to develop highly reliable predictive models for forecasting crash fatalities.
 
-### Before
-![Analysis Before](image-1.png)
+The primary goals of this research include:
+- Analyzing large amounts of traffic accident data.
+- Applying robust Data Filtering and Preprocessing steps.
+- Developing and evaluating Machine Learning prediction models (specifically Random Forest and Logistic Regression) to assess their accuracy and efficiency.
 
-### After
-![Analysis After](image-2.png)
+---
 
-## Model Training
-### Random Forrest Model with Mean filled Data
-#### Without feature Extraction
-<ul>
-<li>
-Training data size=70%
-</li>
-<li>
-Validation data size = 20%
-</li>
-<li>
-Test data size=10%
-</li>
-<li>
-Validation Accuracy: 84.45%
-</li>
-<li>
-Testing Accuracy : 84.41%
-</li>
-</ul>
+## 📊 Dataset & Preprocessing
 
-![Results](image-3.png)
+The project uses the `Accident_Information.csv` dataset. Significant efforts were directed towards cleaning and preparing the data for optimal model performance:
 
-### Random Forrest Model With Mode filled Data
-#### Without feature Extraction
-<ul>
-<li>
-Training data size=80%
-</li>
-<li>
-Test data size=20%
-</li>
-<li>
-Testing Accuracy : 84.38%
-</li>
-</ul>
+1. **Data Cleaning**:
+   - Removed identifiers such as `Accident_Index`.
+   - Replaced redundant or missing entry markers (`Unclassified`, `Data missing or out of range`) with `NaN` values.
+   - Dropped unnecessary columns for better feature quality (e.g., `1st_Road_Class`, `2nd_Road_Class`, `Location_Easting_OSGR`, etc.).
+2. **Feature Engineering**:
+   - Transformed `Date` and `Time` features into a categorized `Time_of_Day` column (`Morning`, `Evening`, `Night`).
+   - Categorical variables were label-encoded for machine-learning compatibility.
+3. **Handling Missing Values**:
+   - Implemented two different imputation strategies to compare results:
+     - Filling `NaN` values with the **Mean** (floor divided) of the respective column.
+     - Filling `NaN` values with the **Mode** of the respective column.
 
-![Results](image-4.png)
+### Data Analysis Overview
+**Before Preprocessing:**
+<p align="center"><img src="image-1.png" alt="Analysis Before" width="600"/></p>
 
-## Feature Extraction Sorted importance wise
-### Before Feature Extraction
-![Feature importance wise](image-5.png)
+**After Preprocessing:**
+<p align="center"><img src="image-2.png" alt="Analysis After" width="600"/></p>
 
-### After Feature Extraction
-![Feature Extracted](image-6.png)
+---
 
+## 🏗️ Model Training & Evaluation
 
-### Random Forrest Model with Mean filled Data
-#### With feature Extraction
-<ul>
-<li>
-Training data size=70%
-</li>
-<li>
-Validation data size = 20%
-</li>
-<li>
-Test data size=10%
-</li>
-<li>
-Validation Accuracy: 84.45%
-</li>
-<li>
-Testing Accuracy : 84.39%
-</li>
-</ul>
+The target variable for our predictive models is `Accident_Severity`. Two primary models were evaluated: **Random Forest Classifier** and **Logistic Regression**.
 
-![Resuls](image-7.png)
+### 1. Models with Mean Filled Data
 
-### Random Forrest Model with Mode filled Data
-#### With feature Extraction
+#### Without Feature Extraction
+* **Random Forest** (Split: 70% Train, 20% Validation, 10% Test)
+  * Validation Accuracy: **84.45%**
+  * Testing Accuracy: **84.41%**
+* **Logistic Regression** (Split: 80% Train, 20% Test)
+  * Testing Accuracy: **84.68%**
 
-<ul>
-<li>
-Training data size=80%
-</li>
-<li>
-Test data size=20%
-</li>
-<li>
-Testing Accuracy : 84.36%
-</li>
-</ul>
+<p align="center"><img src="image-3.png" alt="Results without FE Mean" width="600"/></p>
 
-![Results](image-8.png)
+#### With Feature Extraction
+* **Random Forest** (Split: 70% Train, 20% Validation, 10% Test)
+  * Validation Accuracy: **84.45%**
+  * Testing Accuracy: **84.39%**
 
-## Results
+<p align="center"><img src="image-7.png" alt="Results with FE Mean" width="600"/></p>
 
-![Total Results](image-9.png)
+### 2. Models with Mode Filled Data
 
-## Future Scope
-<ul>
-<li>
-Data Balancing
-</li>
-<li>
-Using other algorithms to compare the results
-</li>
-<li>
-Classifier optimization
-<li>
-More efficient Data Handling
-</li>
-</ul>
+#### Without Feature Extraction
+* **Random Forest** (Split: 80% Train, 20% Test)
+  * Testing Accuracy: **84.38%**
+* **Logistic Regression** (Split: 70% Train, 30% Test)
+  * Testing Accuracy: **84.74%**
 
+<p align="center"><img src="image-4.png" alt="Results without FE Mode" width="600"/></p>
+
+#### With Feature Extraction
+* **Random Forest** (Split: 80% Train, 20% Test)
+  * Testing Accuracy: **84.36%**
+
+<p align="center"><img src="image-8.png" alt="Results with FE Mode" width="600"/></p>
+
+---
+
+## 🔍 Feature Extraction (Sorted by Importance)
+
+Understanding which features contribute the most to accident severity is critical for preventative measures.
+
+**Before Feature Extraction:**
+<p align="center"><img src="image-5.png" alt="Feature importance wise" width="600"/></p>
+
+**After Feature Extraction:**
+<p align="center"><img src="image-6.png" alt="Feature Extracted" width="600"/></p>
+
+---
+
+## 📈 Overall Results
+
+The combination of rigorous preprocessing, missing value imputation strategies, and tested models yielded consistent accuracy in predicting accident fatality severity (~84-85%). 
+
+<p align="center"><img src="image-9.png" alt="Total Results" width="600"/></p>
+
+---
+
+## 📚 Related Previous Works
+
+<p align="center"><img src="image.png" alt="Previous Works" width="600"/></p>
+
+---
+
+## 🚀 Future Scope
+
+There are several areas planned for improvement to increase the robustness and real-world applicability of this prediction model:
+- [ ] **Data Balancing:** Applying techniques like SMOTE to balance the target feature outcomes.
+- [ ] **Exploring More Algorithms:** Comparing current models with Gradient Boosting, XGBoost, or Neural Networks.
+- [ ] **Classifier Optimization:** Fine-tuning hyperparameters using Grid Search or Random Search.
+- [ ] **Enhanced Data Handling:** Automating data pipelines for real-time traffic data processing.
